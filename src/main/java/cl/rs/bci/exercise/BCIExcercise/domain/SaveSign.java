@@ -1,16 +1,12 @@
 package cl.rs.bci.exercise.BCIExcercise.domain;
 
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class SaveSign extends BaseError {
 

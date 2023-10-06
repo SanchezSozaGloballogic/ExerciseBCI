@@ -7,14 +7,11 @@ import cl.rs.bci.exercise.BCIExcercise.domain.SignResponse
 import cl.rs.bci.exercise.BCIExcercise.repository.SignRepository
 import cl.rs.bci.exercise.BCIExcercise.service.impl.SignServiceImpl
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.junit.jupiter.MockitoExtension
 import spock.lang.Specification
 
 import java.time.Instant
 
 import static cl.rs.bci.exercise.BCIExcercise.fixture.SignFixture.*
-import static org.mockito.ArgumentMatchers.any
 import static org.mockito.ArgumentMatchers.anyString
 import static org.mockito.Mockito.when
 

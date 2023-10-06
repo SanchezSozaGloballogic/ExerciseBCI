@@ -72,9 +72,11 @@ public class SignServiceImpl implements SignService {
             if(request != null){
                 return request;
             }
+            request = new SaveSign();
             request.setCode(4);
             request.setDescription("Token expirado");
             request.setTimestamp(Timestamp.from(Instant.now()));
+            return request;
         }
         return null;
     }
