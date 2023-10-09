@@ -3,12 +3,16 @@ package cl.rs.bci.exercise.BCIExcercise.repository;
 import cl.rs.bci.exercise.BCIExcercise.domain.RequestLogin;
 import cl.rs.bci.exercise.BCIExcercise.domain.SaveSign;
 import cl.rs.bci.exercise.BCIExcercise.domain.SignResponse;
+import cl.rs.bci.exercise.BCIExcercise.domain.UserEntity;
+import org.springframework.data.repository.CrudRepository;
 
-public interface SignRepository {
+public interface SignRepository extends CrudRepository<UserEntity, String> {
 
-    SignResponse saveSign(SaveSign request);
+    UserEntity findByEmail (String email);
 
-    SaveSign findEmail(String token);
+    //SignResponse saveSign(SaveSign request);
 
-    SaveSign validateAccount(RequestLogin login);
+    //SaveSign findEmail(String token);
+
+    //SaveSign validateAccount(RequestLogin login);
 }

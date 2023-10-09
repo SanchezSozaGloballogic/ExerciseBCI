@@ -31,29 +31,9 @@ class SignServiceImplTest extends Specification {
 
     def "save sign test ok"(){
         given:
-            SaveSign saveSign = new SaveSign();
-            saveSign.setId(UUID.randomUUID().toString());
-            saveSign.setCreated(Date.from(Instant.now()));
-            saveSign.setActive(true);
-            saveSign.setEmail("password@gmail.com");
-            saveSign.setName("Juan Perez");
-            saveSign.setPassword("a2asfGfdfdf4");
-            List<Phone> phones = new ArrayList<Phone>();
-            phones.add(Phone.builder()
-                .number(123)
-                .cityCode(2)
-                .countryCode("+56")
-                .build());
-            saveSign.setPhones(phones);
-            repository.saveSign(saveSign) >> SignResponse.builder()
-                    .id("a93ee646-7430-462d-ba48-6cef4874dc25")
-                    .created(new Date())
-                    .lastLogin(null)
-                    .token("eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiSG9sYSBNdW5kbyIsImVtYWlsIjoiYWxvaGFAYWxvaGEuY2wiLCJzdWIiOiJIb2xhIE11bmRvIiwianRpIjoiY2E5ZWFhZmUtNzRjZC00MzE2LWE1YzUtYjQ4YmQ2NzUxMzE2IiwiaWF0IjoxNjkyNTc4NzUwLCJleHAiOjE2OTI1NzkwNTB9.QsTUkR65iKC91ahHvYEh5pvlj0FvwCXrB7so46Nu96E")
-                    .isActive(true)
-                    .build()
+            repository.saveSign(any()) >> makeSignResponse();
         when:
-            def response = service.sign(signRequest)
+            def response = service.sign(signRequest);
         then:
             Assertions.assertThat(response.id).isNotEmpty();
             Assertions.assertThat(response.id).isEqualTo('a93ee646-7430-462d-ba48-6cef4874dc25');
