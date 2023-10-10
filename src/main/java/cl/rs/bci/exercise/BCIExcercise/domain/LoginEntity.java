@@ -25,7 +25,4 @@ public class LoginEntity {
     public LoginEntity() {
 
     }
-
-    public LoginEntity(Date created, Date lastLogin, String token, boolean active) {
-    }
 }

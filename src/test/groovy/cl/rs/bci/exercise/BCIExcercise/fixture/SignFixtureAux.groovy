@@ -69,8 +69,8 @@ class SignFixtureAux extends Specification {
                 .build()
     }
 
-    static Error makeErrorBadEmail(){
-        return Error.builder()
+    static BaseError makeErrorBadEmail(){
+        return BaseError.builder()
                 .codigo(1)
                 .detail('Correo es invalido, favor ingresar un correo valido')
                 .timestamp(Timestamp.from(Instant.now()))

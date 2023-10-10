@@ -25,7 +25,4 @@ public class PhoneEntity {
 
     @Column
     private String countryCode;
-
-    public PhoneEntity(long number, int cityCode, String countryCode) {
-    }
 }

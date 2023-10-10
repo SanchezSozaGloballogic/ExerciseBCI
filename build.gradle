@@ -34,13 +34,6 @@ dependencies {
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
 	runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.7'
-
-
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign-core', version: '3.1.4'
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-openfeign', version: '3.1.4'
-	implementation (group: 'org.springframework.cloud', name: 'spring-cloud-context', version: '3.1.4')
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '3.1.4'
-	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter', version: '3.1.4'
 	testCompileOnly group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.5.6'
 	testImplementation group: 'org.spockframework', name: 'spock-core', version: '2.0-groovy-3.0'
 	testImplementation group: 'org.spockframework', name: 'spock-spring', version: '2.0-groovy-3.0'

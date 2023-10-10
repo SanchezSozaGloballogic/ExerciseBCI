@@ -1,7 +1,6 @@
 package cl.rs.bci.exercise.BCIExcercise.fixture;
 
 import cl.rs.bci.exercise.BCIExcercise.domain.*;
-import cl.rs.bci.exercise.BCIExcercise.domain.Error;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -95,12 +94,12 @@ public class SignFixture {
         return saveSign;
     }
 
-    public static Error makeErrorBadEmail(){
-        return Error.builder()
-                .codigo(1)
-                .detail("Correo es invalido, favor ingresar un correo valido")
-                .timestamp(Timestamp.from(Instant.now()))
-                .build();
+    public static BaseError makeErrorBadEmail(){
+        BaseError baseError = new BaseError();
+        baseError.setCode(1);
+        baseError.setDescription("Correo es invalido, favor ingresar un correo valido");
+        baseError.setTimestamp(Timestamp.from(Instant.now()));
+        return baseError;
     }
 
     public static SignRequest getSignRequestBadEmail(){

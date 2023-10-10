@@ -11,9 +11,4 @@ public class GeneralException extends RuntimeException{
         super(message);
         this.codeError = codeError;
     }
-
-    public GeneralException(String message, Throwable cause, int codeError){
-        super(message, cause);
-        this.codeError = codeError;
-    }
 }

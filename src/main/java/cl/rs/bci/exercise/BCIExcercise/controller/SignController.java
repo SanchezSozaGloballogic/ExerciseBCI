@@ -1,6 +1,5 @@
 package cl.rs.bci.exercise.BCIExcercise.controller;
 
-import cl.rs.bci.exercise.BCIExcercise.domain.RequestLogin;
 import cl.rs.bci.exercise.BCIExcercise.domain.SaveSign;
 import cl.rs.bci.exercise.BCIExcercise.domain.SignRequest;
 import cl.rs.bci.exercise.BCIExcercise.domain.SignResponse;
