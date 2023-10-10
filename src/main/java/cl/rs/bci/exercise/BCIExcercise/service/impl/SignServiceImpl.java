@@ -139,7 +139,7 @@ public class SignServiceImpl implements SignService {
     }
 
     private String createToken (String name, String email){
-        Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
+        Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode("QkNJRXhjZXJjaXNlLTE0LzA4LzIwMjMtU2FudGlhZ28vQ2hpbGU="),
                 SignatureAlgorithm.HS256.getJcaName());
 
         String jwtToken = Jwts.builder()
@@ -155,7 +155,7 @@ public class SignServiceImpl implements SignService {
     }
 
     private String validateToken(String token){
-        Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode(secret),
+        Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode("QkNJRXhjZXJjaXNlLTE0LzA4LzIwMjMtU2FudGlhZ28vQ2hpbGU="),
                 SignatureAlgorithm.HS256.getJcaName());
         try{
             Jws<Claims> jwt = Jwts.parserBuilder()

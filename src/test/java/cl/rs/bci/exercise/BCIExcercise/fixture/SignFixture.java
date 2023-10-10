@@ -1,10 +1,7 @@
 package cl.rs.bci.exercise.BCIExcercise.fixture;
 
+import cl.rs.bci.exercise.BCIExcercise.domain.*;
 import cl.rs.bci.exercise.BCIExcercise.domain.Error;
-import cl.rs.bci.exercise.BCIExcercise.domain.Phone;
-import cl.rs.bci.exercise.BCIExcercise.domain.SaveSign;
-import cl.rs.bci.exercise.BCIExcercise.domain.SignRequest;
-import cl.rs.bci.exercise.BCIExcercise.domain.SignResponse;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -48,6 +45,26 @@ public class SignFixture {
         saveSign.setId("a93ee646-7430-462d-ba48-6cef4874dc25");
 
         return saveSign;
+    }
+
+    public static UserEntity getUserEntityDTO(){
+        List<PhoneEntity> phones = new ArrayList<PhoneEntity>();
+        PhoneEntity phoneEntity = new PhoneEntity();
+        phoneEntity.setNumber(123);
+        phoneEntity.setCityCode(2);
+        phoneEntity.setCountryCode("+56");
+        phones.add(phoneEntity);
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setPhones(phones);
+        userEntity.setEmail("password@gmail.com");
+        userEntity.setPassword("a2asfGfdfdf4");
+        userEntity.setCreated(new Date());
+        userEntity.setName("Juan Perez");
+        userEntity.setActive(true);
+        userEntity.setIdUser("a93ee646-7430-462d-ba48-6cef4874dc25");
+
+        return userEntity;
     }
 
     public static SignResponse makeSignResponse(){

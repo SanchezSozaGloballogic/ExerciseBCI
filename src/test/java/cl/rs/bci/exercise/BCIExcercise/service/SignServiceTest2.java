@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static cl.rs.bci.exercise.BCIExcercise.fixture.SignFixture.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,7 +33,7 @@ public class SignServiceTest2 {
 
     @Test
     void saveSignTestOK(){
-        when(repository.saveSign(any())).thenReturn(makeSignResponse());
+        when(repository.save(any())).thenReturn(getUserEntityDTO());
         SignResponse response = service.sign(getSignRequest());
         Assertions.assertThat(response.getId()).isNotEmpty();
         Assertions.assertThat(response.getId()).isEqualTo("a93ee646-7430-462d-ba48-6cef4874dc25");
@@ -43,7 +44,7 @@ public class SignServiceTest2 {
 
     @Test
     void saveSignUserExistTest(){
-        when(repository.validateAccount(any())).thenReturn(getSaveSignDTO());
+        when(repository.findByEmail(any())).thenReturn(getUserEntityDTO());
         SignResponse response = service.sign(getSignRequest());
         Assertions.assertThat(response.getCode()).isEqualTo(3);
         Assertions.assertThat(response.getDescription()).isEqualTo("Usuario ya existe, favor ingrese un nuevo usuario");
@@ -80,8 +81,9 @@ public class SignServiceTest2 {
 
     @Test
     void loginTestOK(){
-        when(repository.findEmail(anyString())).thenReturn(getSaveSignDTO());
-        SaveSign response = (SaveSign) service.login("test");
+        when(repository.findByEmail(anyString())).thenReturn(getUserEntityDTO());
+        when(repository.save(any())).thenReturn(getUserEntityDTO());
+        SaveSign response = service.login(ReflectionTestUtils.invokeMethod(service, "createToken", "Juan Perez", "password@gmail.com"));
         Assertions.assertThat(response.getId()).isNotEmpty();
         Assertions.assertThat(response.getId()).isEqualTo("a93ee646-7430-462d-ba48-6cef4874dc25");
         Assertions.assertThat(response.getLastLogin()).isNull();
@@ -90,7 +92,7 @@ public class SignServiceTest2 {
 
     @Test
     void loginTestNull(){
-        SaveSign response = (SaveSign) service.login(null);
-        Assertions.assertThat(response).isNull();
+        SaveSign response = service.login(null);
+        Assertions.assertThat(response.getId()).isNull();
     }
 }

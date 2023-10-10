@@ -1,48 +1,54 @@
 package cl.rs.bci.exercise.BCIExcercise.controller
 
+import cl.rs.bci.exercise.BCIExcercise.domain.SaveSign
 import cl.rs.bci.exercise.BCIExcercise.domain.SignRequest
+import cl.rs.bci.exercise.BCIExcercise.domain.SignResponse
 import cl.rs.bci.exercise.BCIExcercise.service.SignService
 import org.assertj.core.api.Assertions
-import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.MockitoAnnotations
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import spock.lang.Specification
 
 import static org.mockito.ArgumentMatchers.any
-import static org.mockito.ArgumentMatchers.anyString
 import static org.mockito.Mockito.when
 
-@ExtendWith(MockitoExtension.class)
 class SignControllerTest extends Specification {
 
-    @InjectMocks private SignController controller
+    @InjectMocks private SignController controller;
 
-    @Mock private SignService service
+    @Mock private SignService service;
 
 
-    def "save sing ok"(){
-        given:
-        when(service.sign(any(SignRequest.class))).thenReturn(new Object())
-        ResponseEntity<Object> responseEntity = controller.signUp(new SignRequest())
-        Assertions.assertThat(responseEntity).isNotNull()
-        Assertions.assertThat(responseEntity.statusCode).isEqualByComparingTo(HttpStatus.OK)
-        Object object = responseEntity.body
-        expect:
-        Assertions.assertThat(object).isNotNull()
+    def setup(){
+        MockitoAnnotations.openMocks(this);
     }
 
 
-    def "find email"(){
+    def "test save sign ok"(){
         given:
-        when(service.login(any(String.class))).thenReturn(new Object())
-        ResponseEntity<Object> responseEntity = controller.login(anyString())
+        when(service.sign(any(SignRequest.class))).thenReturn(new SignResponse());
+        when:
+        ResponseEntity<SignResponse> responseEntity = controller.signUp(new SignRequest());
+        then:
+        Assertions.assertThat(responseEntity).isNotNull();
+        Assertions.assertThat(responseEntity.statusCode).isEqualByComparingTo(HttpStatus.OK);
+        Object object = responseEntity.body;
+        Assertions.assertThat(object).isNotNull();
+    }
+
+
+    def "test login ok"(){
+        given:
+        when(service.login(org.mockito.ArgumentMatchers.any())).thenReturn(new SaveSign());
+        when:
+        ResponseEntity<SaveSign> responseEntity = controller.login(any())
+        then:
         Assertions.assertThat(responseEntity).isNotNull()
         Assertions.assertThat(responseEntity.statusCode).isEqualByComparingTo(HttpStatus.OK)
         Object object = responseEntity.body
-        expect:
         Assertions.assertThat(object).isNotNull()
     }
 }
