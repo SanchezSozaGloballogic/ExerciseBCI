@@ -19,7 +19,7 @@
      ./gradlew bootRun 
    ```
 * Ejecutar endpoint en postman http://localhost:9091/sign-up el cual es un metodo POST
-  * Ejemplo de Body
+  * Ejemplo de body
   ```JSON
     {
        "email": "aloha@aloha.cl",
@@ -33,5 +33,8 @@
         }
        ]
     }
-```
 
+* Ejecutar endpoint en postman http://localhost:9091/login el cual es un metodo Get donde el parametro es el token generado en el endpoint anterior
+  * Ejemplo de consumo
+  ```html
+    http://localhost:9091/login?token=eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiSG9sYSBNdW5kbyIsImVtYWlsIjoiYWxvaGFAYWxvaGEuY29tIiwic3ViIjoiSG9sYSBNdW5kbyIsImp0aSI6ImQ4NTI1NjhiLTMzMTYtNDA5Yi04N2RmLWVjZTdmMWRiYTlhNyIsImlhdCI6MTY5NzYzNDk3MiwiZXhwIjoxNjk3NjM1MjcyfQ.dzW5UkruTKJedE7Xewsz2IsQ0XX0EgdOcwqDO27pcrs

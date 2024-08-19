@@ -8,7 +8,6 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -27,17 +26,12 @@ import java.util.stream.Collectors;
 @Service
 public class SignServiceImpl implements SignService {
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    private SignRepository repository;
-
-    private static ModelMapper modelMapper = new ModelMapper();
+    private final SignRepository repository;
+    private static final ModelMapper modelMapper = new ModelMapper();
 
     public SignServiceImpl(SignRepository repository){
         this.repository = repository;
     }
-
 
     @Override
     public SignResponse sign(SignRequest request) {
@@ -45,33 +39,11 @@ public class SignServiceImpl implements SignService {
         try{
             if(validateMail(request.getEmail())){
                 if(validatePassword(request.getPassword())){
-                    RequestLogin login = RequestLogin.builder()
-                            .user(request.getEmail())
-                            .password(request.getPassword())
-                            .build();
-                    UserEntity request1 = repository.findByEmail(login.getUser());
-                    if(request1 != null){
-                        response.setCode(3);
-                        response.setTimestamp(Timestamp.from(Instant.now()));
-                        response.setDescription("Usuario ya existe, favor ingrese un nuevo usuario");
-                        return response;
+                    UserEntity user = repository.findByEmail(request.getEmail());
+                    if(user != null){
+                        return userExistsResponse();
                     }
-
-
-                    List<PhoneEntity> phoneEntity = request.getPhones()
-                            .stream()
-                            .map(user -> modelMapper.map(user, PhoneEntity.class))
-                            .collect(Collectors.toList());
-                    UserEntity user = new UserEntity(UUID.randomUUID().toString(), Date.from(Instant.now()), null, createToken(request.getName(), request.getEmail()), true, request.getName(), request.getEmail(),
-                            Base64.getEncoder().encodeToString(request.getPassword().getBytes()), phoneEntity);
-                    UserEntity entity = repository.save(user);
-                    return SignResponse.builder()
-                            .id(entity.getIdUser())
-                            .created(entity.getCreated())
-                            .lastLogin(entity.getLastLogin())
-                            .token(entity.getToken())
-                            .isActive(entity.isActive())
-                            .build();
+                    return createAndSaveUserEntity(request);
                 }
             }
         }catch (GeneralException ex){
@@ -88,26 +60,78 @@ public class SignServiceImpl implements SignService {
         if(email != null){
             UserEntity user = repository.findByEmail(email);
             if(user != null){
-                UserEntity userAux = new UserEntity(user.getIdUser(), user.getCreated(), new Date(System.currentTimeMillis()), user.getToken(), user.isActive(), user.getName(), user.getEmail(),
-                        user.getPassword(), user.getPhones());
-                UserEntity entity = repository.save(userAux);
-                List<Phone> phones = user.getPhones()
-                        .stream()
-                        .map(phone -> modelMapper.map(phone, Phone.class))
-                        .collect(Collectors.toList());
-                return SaveSign.builder()
-                        .id(entity.getIdUser())
-                        .created(entity.getCreated())
-                        .lastLogin(entity.getLastLogin())
-                        .token(createToken(entity.getName(), entity.getEmail()))
-                        .isActive(entity.isActive())
-                        .name(entity.getName())
-                        .email(entity.getEmail())
-                        .password(entity.getPassword())
-                        .phones(phones)
-                        .build();
+                UserEntity updatedUser = updateUserAccount(user);
+                List<Phone> phones = mapPhonesToPhoneEntities(updatedUser.getPhones());
+                return constructResponse(updatedUser, phones);
             }
         }
+        return createTokenExpiredResponse();
+    }
+
+    private SignResponse userExistsResponse() {
+        SignResponse response = new SignResponse();
+        response.setCode(3);
+        response.setTimestamp(Timestamp.from(Instant.now()));
+        response.setDescription("Usuario ya existe, favor ingrese un nuevo usuario");
+        return response;
+    }
+
+    private SignResponse createAndSaveUserEntity(SignRequest request) {
+        List<PhoneEntity> phoneEntities = convertToPhoneEntities(request.getPhones());
+        String encodedPassword = encodePassword(request.getPassword());
+        UserEntity user = new UserEntity(UUID.randomUUID().toString(), Date.from(Instant.now()), null, createToken(request.getName(), request.getEmail()), true, request.getName(), request.getEmail(),
+                encodedPassword, phoneEntities);
+        UserEntity savedEntity = repository.save(user);
+        return convertToSignResponse(savedEntity);
+    }
+
+    private UserEntity updateUserAccount(UserEntity user){
+        UserEntity userAux = new UserEntity(user.getIdUser(), user.getCreated(), new Date(System.currentTimeMillis()),
+                user.getToken(), user.isActive(), user.getName(), user.getEmail(), user.getPassword(), user.getPhones());
+        return repository.save(userAux);
+    }
+
+    private List<PhoneEntity> convertToPhoneEntities(List<Phone> phones) {
+        return phones.stream()
+                .map(phone -> modelMapper.map(phone, PhoneEntity.class))
+                .collect(Collectors.toList());
+    }
+
+    private List<Phone> mapPhonesToPhoneEntities(List<PhoneEntity> phoneEntities){
+        return phoneEntities.stream()
+                .map(phone -> modelMapper.map(phone, Phone.class))
+                .collect(Collectors.toList());
+    }
+
+    private String encodePassword(String password) {
+        return Base64.getEncoder().encodeToString(password.getBytes());
+    }
+
+    private SignResponse convertToSignResponse(UserEntity entity) {
+        return SignResponse.builder()
+                .id(entity.getIdUser())
+                .created(entity.getCreated())
+                .lastLogin(entity.getLastLogin())
+                .token(entity.getToken())
+                .isActive(entity.isActive())
+                .build();
+    }
+
+    private SaveSign constructResponse(UserEntity entity, List<Phone> phones){
+        return SaveSign.builder()
+                .id(entity.getIdUser())
+                .created(entity.getCreated())
+                .lastLogin(entity.getLastLogin())
+                .token(createToken(entity.getName(), entity.getEmail()))
+                .isActive(entity.isActive())
+                .name(entity.getName())
+                .email(entity.getEmail())
+                .password(entity.getPassword())
+                .phones(phones)
+                .build();
+    }
+
+    private SaveSign createTokenExpiredResponse() {
         SaveSign request = new SaveSign();
         request.setCode(4);
         request.setDescription("Token expirado");
@@ -116,7 +140,7 @@ public class SignServiceImpl implements SignService {
     }
 
     public static boolean validateMail(String email) {
-        Pattern pattern = Pattern.compile("^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+        Pattern pattern = Pattern.compile("^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
         Matcher mather = pattern.matcher(email);
         if(mather.find()){
             return true;
@@ -142,7 +166,7 @@ public class SignServiceImpl implements SignService {
         Key hmacKey = new SecretKeySpec(Base64.getDecoder().decode("QkNJRXhjZXJjaXNlLTE0LzA4LzIwMjMtU2FudGlhZ28vQ2hpbGU="),
                 SignatureAlgorithm.HS256.getJcaName());
 
-        String jwtToken = Jwts.builder()
+        return Jwts.builder()
                 .claim("name", name)
                 .claim("email", email)
                 .setSubject(name)
@@ -151,7 +175,6 @@ public class SignServiceImpl implements SignService {
                 .setExpiration(Date.from(Instant.now().plus(5l, ChronoUnit.MINUTES)))
                 .signWith(hmacKey)
                 .compact();
-        return jwtToken;
     }
 
     private String validateToken(String token){
@@ -162,9 +185,8 @@ public class SignServiceImpl implements SignService {
                     .setSigningKey(hmacKey)
                     .build()
                     .parseClaimsJws(token);
-            String mail = jwt.getBody().get("email").toString();
 
-            return mail;
+            return jwt.getBody().get("email").toString();
         }catch (Exception ex){
             return null;
         }
