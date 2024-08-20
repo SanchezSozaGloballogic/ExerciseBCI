@@ -18,6 +18,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,7 +78,7 @@ public class SignServiceImpl implements SignService {
     }
 
     private SignResponse createAndSaveUserEntity(SignRequest request) {
-        List<PhoneEntity> phoneEntities = convertToPhoneEntities(request.getPhones());
+        List<PhoneEntity> phoneEntities = Objects.isNull(request.getPhones())?null:convertToPhoneEntities(request.getPhones());
         String encodedPassword = encodePassword(request.getPassword());
         UserEntity user = new UserEntity(UUID.randomUUID().toString(), Date.from(Instant.now()), null, createToken(request.getName(), request.getEmail()), true, request.getName(), request.getEmail(),
                 encodedPassword, phoneEntities);
@@ -140,26 +141,29 @@ public class SignServiceImpl implements SignService {
     }
 
     public static boolean validateMail(String email) {
-        Pattern pattern = Pattern.compile("^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
-        Matcher mather = pattern.matcher(email);
-        if(mather.find()){
-            return true;
+        if(email!=null){
+            Pattern pattern = Pattern.compile("^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$");
+            Matcher mather = pattern.matcher(email);
+            if(mather.find()){
+                return true;
+            }
+            throw new GeneralException("Correo es invalido, favor ingresar un correo valido",1);
         }
-        throw new GeneralException("Correo es invalido, favor ingresar un correo valido",1);
+        throw new GeneralException("Correo no puede ser nulo",3);
+
     }
 
     public static boolean validatePassword(String email) {
-        Pattern pattern = Pattern.compile("^(?=.*[0-9])"
-                + "(?=.*[a-z])(?=.*[A-Z])"
-                + "(?=\\S+$).{8,12}$"
-                );
-
-        Matcher mather = pattern.matcher(email);
-        if(mather.find()){
-            return true;
+        if(email!=null){
+            Pattern pattern = Pattern.compile("^(?=(?:[^A-Z]*[A-Z]){1}[^A-Z]*$)(?=(?:[^0-9]*[0-9]){2}[^0-9]*$).{8,12}$");
+            Matcher mather = pattern.matcher(email);
+            if(mather.find()){
+                return true;
+            }
+            throw new GeneralException("Contraseña no cumple estandar, favor agregar una mayusula y dos numeros, " +
+                    "largo maximo de 12 caracteres y minimo de 8 caracteres", 2);
         }
-        throw new GeneralException("Contraseña no cumple estandar, favor agregar una mayusula y dos numeros, " +
-                "largo maximo de 12 caracteres y minimo de 8 caracteres", 2);
+        throw new GeneralException("Contraseña no puede ser nulo",4);
     }
 
     private String createToken (String name, String email){

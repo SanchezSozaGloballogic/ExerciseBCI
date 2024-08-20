@@ -72,7 +72,7 @@ public class SignFixture {
         response.setCreated(new Date());
         response.setLastLogin(null);
         response.setToken("eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiSG9sYSBNdW5kbyIsImVtYWlsIjoiYWxvaGFAYWxvaGEuY2wiLCJzdWIiOiJIb2xhIE11bmRvIiwianRpIjoiY2E5ZWFhZmUtNzRjZC00MzE2LWE1YzUtYjQ4YmQ2NzUxMzE2IiwiaWF0IjoxNjkyNTc4NzUwLCJleHAiOjE2OTI1NzkwNTB9.QsTUkR65iKC91ahHvYEh5pvlj0FvwCXrB7so46Nu96E");
-        response.setActive(true);
+        response.setIsActive(true);
         return response;
     }
 

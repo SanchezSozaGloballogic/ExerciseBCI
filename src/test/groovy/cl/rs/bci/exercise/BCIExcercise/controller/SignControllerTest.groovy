@@ -17,22 +17,27 @@ import static org.mockito.Mockito.when
 
 class SignControllerTest extends Specification {
 
-    @InjectMocks private SignController controller;
-
-    @Mock private SignService service;
+    private SignController controller
+    private SignService service = Mock()
+    def request
+    def response
+    def responseSign
 
 
     def setup(){
-        MockitoAnnotations.openMocks(this);
+        controller = new SignController(service)
+        request = new SignRequest()
+        response = new SignResponse()
+        responseSign = new SaveSign()
     }
 
 
     def "test save sign ok"(){
-        given:
-        when(service.sign(any(SignRequest.class))).thenReturn(new SignResponse());
         when:
-        ResponseEntity<SignResponse> responseEntity = controller.signUp(new SignRequest());
+        ResponseEntity<SignResponse> responseEntity = controller.signUp(request)
+
         then:
+        1 * service.sign(_) >> response
         Assertions.assertThat(responseEntity).isNotNull();
         Assertions.assertThat(responseEntity.statusCode).isEqualByComparingTo(HttpStatus.OK);
         Object object = responseEntity.body;
@@ -41,11 +46,11 @@ class SignControllerTest extends Specification {
 
 
     def "test login ok"(){
-        given:
-        when(service.login(org.mockito.ArgumentMatchers.any())).thenReturn(new SaveSign());
         when:
-        ResponseEntity<SaveSign> responseEntity = controller.login(any())
+        ResponseEntity<SaveSign> responseEntity = controller.login("testToken")
+
         then:
+        1 * service.login(_) >> responseSign
         Assertions.assertThat(responseEntity).isNotNull()
         Assertions.assertThat(responseEntity.statusCode).isEqualByComparingTo(HttpStatus.OK)
         Object object = responseEntity.body

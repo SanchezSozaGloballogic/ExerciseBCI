@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
 @AllArgsConstructor
@@ -14,6 +15,6 @@ public class SignResponse extends BaseError{
     private Date created;
     private Date lastLogin;
     private String token;
-    private boolean isActive;
+    private Boolean isActive;
 
 }

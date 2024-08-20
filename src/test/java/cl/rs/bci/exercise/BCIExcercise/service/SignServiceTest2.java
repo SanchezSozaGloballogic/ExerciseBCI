@@ -39,7 +39,7 @@ public class SignServiceTest2 {
         Assertions.assertThat(response.getId()).isEqualTo("a93ee646-7430-462d-ba48-6cef4874dc25");
         Assertions.assertThat(response.getLastLogin()).isNull();
         Assertions.assertThat(response.getCreated()).isNotNull();
-        Assertions.assertThat(response.isActive()).isTrue();
+        Assertions.assertThat(response.getIsActive()).isTrue();
     }
 
     @Test
