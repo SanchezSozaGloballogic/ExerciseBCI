@@ -1,6 +1,7 @@
 package cl.rs.bci.exercise.BCIExcercise.service.impl;
 
 import cl.rs.bci.exercise.BCIExcercise.domain.*;
+import cl.rs.bci.exercise.BCIExcercise.domain.Error;
 import cl.rs.bci.exercise.BCIExcercise.repository.SignRepository;
 import cl.rs.bci.exercise.BCIExcercise.service.SignService;
 import io.jsonwebtoken.Claims;
@@ -15,6 +16,7 @@ import java.security.Key;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -48,9 +50,13 @@ public class SignServiceImpl implements SignService {
                 }
             }
         }catch (GeneralException ex){
-            response.setCode(ex.getCodeError());
-            response.setDescription(ex.getMessage());
-            response.setTimestamp(Timestamp.from(Instant.now()));
+            List<Error> errors = new ArrayList<>();
+            Error error = new Error();
+            error.setCode(ex.getCodeError());
+            error.setDescription(ex.getMessage());
+            error.setTimestamp(Timestamp.from(Instant.now()));
+            errors.add(error);
+            response.setError(errors);
         }
         return response;
     }
@@ -71,9 +77,13 @@ public class SignServiceImpl implements SignService {
 
     private SignResponse userExistsResponse() {
         SignResponse response = new SignResponse();
-        response.setCode(3);
-        response.setTimestamp(Timestamp.from(Instant.now()));
-        response.setDescription("Usuario ya existe, favor ingrese un nuevo usuario");
+        List<Error> errors = new ArrayList<>();
+        Error error = new Error();
+        error.setCode(3);
+        error.setTimestamp(Timestamp.from(Instant.now()));
+        error.setDescription("Usuario ya existe, favor ingrese un nuevo usuario");
+        errors.add(error);
+        response.setError(errors);
         return response;
     }
 
@@ -134,9 +144,13 @@ public class SignServiceImpl implements SignService {
 
     private SaveSign createTokenExpiredResponse() {
         SaveSign request = new SaveSign();
-        request.setCode(4);
-        request.setDescription("Token expirado");
-        request.setTimestamp(Timestamp.from(Instant.now()));
+        List<Error> errors = new ArrayList<>();
+        Error error = new Error();
+        error.setCode(4);
+        error.setDescription("Token expirado");
+        error.setTimestamp(Timestamp.from(Instant.now()));
+        errors.add(error);
+        request.setError(errors);
         return request;
     }
 
@@ -163,7 +177,7 @@ public class SignServiceImpl implements SignService {
             throw new GeneralException("Contraseña no cumple estandar, favor agregar una mayusula y dos numeros, " +
                     "largo maximo de 12 caracteres y minimo de 8 caracteres", 2);
         }
-        throw new GeneralException("Contraseña no puede ser nulo",4);
+        throw new GeneralException("Contraseña no puede ser nula",4);
     }
 
     private String createToken (String name, String email){

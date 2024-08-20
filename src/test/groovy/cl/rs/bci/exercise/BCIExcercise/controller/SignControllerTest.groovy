@@ -38,10 +38,10 @@ class SignControllerTest extends Specification {
 
         then:
         1 * service.sign(_) >> response
-        Assertions.assertThat(responseEntity).isNotNull();
-        Assertions.assertThat(responseEntity.statusCode).isEqualByComparingTo(HttpStatus.OK);
-        Object object = responseEntity.body;
-        Assertions.assertThat(object).isNotNull();
+        Assertions.assertThat(responseEntity).isNotNull()
+        Assertions.assertThat(responseEntity.statusCode).isEqualByComparingTo(HttpStatus.OK)
+        Object object = responseEntity.body
+        Assertions.assertThat(object).isNotNull()
     }
 
 

@@ -17,6 +17,8 @@ class SignServiceImplTest extends Specification {
     def responseDto
     def badRequestEmail
     def badRequestPassword
+    def emailNull
+    def passwordNull
 
 
     def setup(){
@@ -25,6 +27,8 @@ class SignServiceImplTest extends Specification {
         responseDto = SignFixture.userEntityDTO
         badRequestEmail = SignFixture.signRequestBadEmail
         badRequestPassword = SignFixture.signRequestBadPassword
+        emailNull = SignFixture.signRequestEmailNull
+        passwordNull = SignFixture.signRequestPasswordNull
     }
 
 
@@ -49,9 +53,10 @@ class SignServiceImplTest extends Specification {
 
         then:
         1 * repository.findByEmail(_) >> responseDto
-        Assertions.assertThat(response.code).isEqualTo(3)
-        Assertions.assertThat(response.description).isEqualTo('Usuario ya existe, favor ingrese un nuevo usuario')
-        Assertions.assertThat(response.timestamp).isNotNull()
+
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isEqualTo(3)
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isEqualTo('Usuario ya existe, favor ingrese un nuevo usuario')
+        Assertions.assertThat(response.getError().stream().findAny().get().timestamp).isNotNull()
     }
 
 
@@ -60,11 +65,11 @@ class SignServiceImplTest extends Specification {
         def response = service.sign(badRequestEmail)
 
         then:
-        Assertions.assertThat(response.code).isNotNull()
-        Assertions.assertThat(response.code).isEqualTo(1)
-        Assertions.assertThat(response.description).isNotNull()
-        Assertions.assertThat(response.description).isEqualTo('Correo es invalido, favor ingresar un correo valido')
-        Assertions.assertThat(response.timestamp).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isEqualTo(1)
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isEqualTo('Correo es invalido, favor ingresar un correo valido')
+        Assertions.assertThat(response.getError().stream().findAny().get().timestamp).isNotNull()
     }
 
 
@@ -73,13 +78,38 @@ class SignServiceImplTest extends Specification {
         def response = service.sign(badRequestPassword)
 
         then:
-        Assertions.assertThat(response.code).isNotNull()
-        Assertions.assertThat(response.code).isEqualTo(2)
-        Assertions.assertThat(response.description).isNotNull()
-        Assertions.assertThat(response.description).isEqualTo('Contraseña no cumple estandar, favor agregar una mayusula y dos numeros, ' +
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isEqualTo(2)
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isEqualTo('Contraseña no cumple estandar, favor agregar una mayusula y dos numeros, ' +
                 'largo maximo de 12 caracteres y minimo de 8 caracteres')
-        Assertions.assertThat(response.timestamp).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().timestamp).isNotNull()
     }
+
+    def "save sign email null"(){
+        when:
+        def response = service.sign(emailNull)
+
+        then:
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isEqualTo(3)
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isEqualTo('Correo no puede ser nulo')
+        Assertions.assertThat(response.getError().stream().findAny().get().timestamp).isNotNull()
+    }
+
+    def "save sign password null"(){
+        when:
+        def response = service.sign(passwordNull)
+
+        then:
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().code).isEqualTo(4)
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isNotNull()
+        Assertions.assertThat(response.getError().stream().findAny().get().description).isEqualTo('Contraseña no puede ser nula')
+        Assertions.assertThat(response.getError().stream().findAny().get().timestamp).isNotNull()
+    }
+
 
 
     def "login test ok"(){

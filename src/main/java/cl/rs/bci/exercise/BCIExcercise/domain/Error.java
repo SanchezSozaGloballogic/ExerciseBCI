@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.List;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BaseError implements Serializable {
+public class Error {
 
-    List<Error> error;
+    private Integer code;
+    private String description;
+    private Timestamp timestamp;
 }

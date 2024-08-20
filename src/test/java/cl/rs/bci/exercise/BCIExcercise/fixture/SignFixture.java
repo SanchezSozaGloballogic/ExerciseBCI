@@ -1,12 +1,16 @@
 package cl.rs.bci.exercise.BCIExcercise.fixture;
 
 import cl.rs.bci.exercise.BCIExcercise.domain.*;
+import cl.rs.bci.exercise.BCIExcercise.domain.Error;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 public class SignFixture {
@@ -16,6 +20,34 @@ public class SignFixture {
         request.setName("Juan Perez");
         request.setEmail("password@gmail.com");
         request.setPassword("a2asfGfdfdf4");
+        List<Phone> phones = new ArrayList<Phone>();
+        phones.add(Phone.builder()
+                .number(123)
+                .cityCode(2)
+                .countryCode("+56")
+                .build());
+        request.setPhones(phones);
+        return request;
+    }
+
+    public static SignRequest getSignRequestEmailNull(){
+        SignRequest request = new SignRequest();
+        request.setName("Juan Perez");
+        request.setPassword("a2asfGfdfdf4");
+        List<Phone> phones = new ArrayList<Phone>();
+        phones.add(Phone.builder()
+                .number(123)
+                .cityCode(2)
+                .countryCode("+56")
+                .build());
+        request.setPhones(phones);
+        return request;
+    }
+
+    public static SignRequest getSignRequestPasswordNull(){
+        SignRequest request = new SignRequest();
+        request.setName("Juan Perez");
+        request.setEmail("password@gmail.com");
         List<Phone> phones = new ArrayList<Phone>();
         phones.add(Phone.builder()
                 .number(123)
@@ -95,10 +127,14 @@ public class SignFixture {
     }
 
     public static BaseError makeErrorBadEmail(){
+        List<Error> errors = new ArrayList<Error>();
+        Error error = new Error();
         BaseError baseError = new BaseError();
-        baseError.setCode(1);
-        baseError.setDescription("Correo es invalido, favor ingresar un correo valido");
-        baseError.setTimestamp(Timestamp.from(Instant.now()));
+        error.setCode(1);
+        error.setDescription("Correo es invalido, favor ingresar un correo valido");
+        error.setTimestamp(Timestamp.from(Instant.now()));
+        errors.add(error);
+        baseError.setError(errors);
         return baseError;
     }
 

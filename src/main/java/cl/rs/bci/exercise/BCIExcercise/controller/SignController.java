@@ -26,14 +26,14 @@ public class SignController {
     @PostMapping(value = "/sign-up", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SignResponse> signUp (@RequestBody SignRequest request) {
         SignResponse response = service.sign(request);
-        boolean hasError = response.getCode() != null;
+        boolean hasError = response.getError() != null && response.getError().stream().findFirst().isPresent();
         return createResponseEntity(response, hasError ? HttpStatus.BAD_REQUEST : HttpStatus.OK);
     }
 
     @GetMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SaveSign> login (@RequestParam String token){
         SaveSign response = service.login(token);
-        boolean hasError = response.getCode() != null;
+        boolean hasError = response.getError() != null && response.getError().stream().findFirst().isPresent();
         return createResponseEntity(response, hasError ? HttpStatus.UNAUTHORIZED : HttpStatus.OK);
     }
 
