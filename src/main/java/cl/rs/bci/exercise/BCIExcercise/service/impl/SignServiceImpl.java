@@ -17,6 +17,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -118,6 +119,11 @@ public class SignServiceImpl implements SignService {
         return Base64.getEncoder().encodeToString(password.getBytes());
     }
 
+    private String decodePassword(String password) {
+        byte[] decodedBytes = Base64.getDecoder().decode(password);
+        return new String(decodedBytes);
+    }
+
     private SignResponse convertToSignResponse(UserEntity entity) {
         return SignResponse.builder()
                 .id(entity.getIdUser())
@@ -137,7 +143,7 @@ public class SignServiceImpl implements SignService {
                 .isActive(entity.isActive())
                 .name(entity.getName())
                 .email(entity.getEmail())
-                .password(entity.getPassword())
+                .password(decodePassword(entity.getPassword()))
                 .phones(phones)
                 .build();
     }
